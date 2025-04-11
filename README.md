@@ -13,4 +13,6 @@ Other key feature: because the data is presented as a webpage, I can monitor thi
 
 ![little render monitor thing angle view](https://github.com/howiemnet/render-monitor/blob/main/images/WhatsApp%20Image%202025-04-09%20at%2009.52.21%20(1).jpeg)
 
+Built in an afternoon with the help of three instances of ChatGPT (Blitz, Shen, and Crystal. They chose their own names, don't blame me)
+
 h / 2025-04-11
