@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Render Monitor</title>
+  <meta charset="UTF-8">
+  <style>
+    body { width: 448px; font-family: sans-serif; margin: 16px; background: #111; color: #ddd; }
+    h1 { text-align: right; margin-top:12px; color: #555;}
+    .node { margin-bottom: 2em; border-top: 1px solid #888; padding-bottom: 1em; }
+    .nodename { color: #888; font-weight: bold; text-align: right; font-size: xx-large; }    .bar {
+      height: 10px;
+      background: #333;
+      margin: 4px 0;
+      position: relative;
+    }
+    .fill {
+      height: 10px;
+      position: absolute;
+      top: 0; left: 0;
+      
+    }
+    .cpu { background: blue; }
+    .gpu { background: red; }
+    canvas { background: #222; display: block; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>h's render monitor</h1>
+  <div id="container"></div>
+
+  <script>
+    const container = document.getElementById("container");
+    const historyLength = 120;
+    const nodeHistory = {}; // stores { nodeName: { cpu: [], gpu: [] } }
+
+    async function fetchData() {
+      try {
+        const response = await fetch("http://10.0.1.50/render_status.json");
+        const data = await response.json();
+
+        // Clear container
+        container.innerHTML = "";
+
+        data.forEach(node => {
+          const name = node.name.trim();
+
+          // Initialise history if needed
+          if (!nodeHistory[name]) {
+            nodeHistory[name] = { cpu: [], gpu: [] };
+          }
+
+          // Push latest values
+          nodeHistory[name].cpu.push(node.cpu);
+          nodeHistory[name].gpu.push(node.gpu);
+
+          // Keep history length
+          if (nodeHistory[name].cpu.length > historyLength) {
+            nodeHistory[name].cpu.shift();
+            nodeHistory[name].gpu.shift();
+          }
+
+          // Create DOM elements
+          const div = document.createElement("div");
+          div.className = "node";
+          div.innerHTML = `
+            <div class="nodename">${name}</div><br>
+            CPU: <div class="bar"><div class="fill cpu" style="width:${node.cpu}%;transition: width 0.3s ease-out;"></div></div>
+            GPU: <div class="bar"><div class="fill gpu" style="width:${node.gpu}%;transition: width 0.3s ease-out;"></div></div>
+            MEM: ${node.mem}MB
+            <canvas width="448" height="100" id="canvas-${name}"></canvas>
+          `;
+          container.appendChild(div);
+
+          // Draw the history graph
+          const canvas = document.getElementById(`canvas-${name}`);
+          const ctx = canvas.getContext("2d");
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          const drawLine = (data, color) => {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.moveTo(0, canvas.height - (data[0] / 100) * canvas.height);
+            for (let i = 1; i < data.length; i++) {
+              const x = (i / historyLength) * canvas.width;
+              const y = canvas.height - (data[i] / 100) * canvas.height;
+              ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+          };
+
+          drawLine(nodeHistory[name].gpu, "red");
+          drawLine(nodeHistory[name].cpu, "blue");
+        });
+
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    }
+
+    setInterval(fetchData, 500);
+    fetchData(); // initial call
+  </script>
+</body>
+</html>
