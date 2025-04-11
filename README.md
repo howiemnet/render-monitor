@@ -7,6 +7,8 @@ Key feature for me is that it lets me see activity of both my Linux render nodes
 
 Other key feature: because the data is presented as a webpage, I can monitor things with any machine or device on my network - my phone, say, or this portable "Raspberry PI jammed into a skinny AliExpress LCD monitor" gizmo:
 
-![little render monitor thing](https://github.com/howiemnet/render-monitor/blob/main/images/WhatsApp%20Image%202025-04-09%20at%2009.52.21%20(1).jpeg)
+![little render monitor thing](https://github.com/howiemnet/render-monitor/blob/main/images/WhatsApp%20Image%202025-04-09%20at%2009.52.21%20.jpeg)
+
+![little render monitor thing angle view](https://github.com/howiemnet/render-monitor/blob/main/images/WhatsApp%20Image%202025-04-09%20at%2009.52.21%20(1).jpeg)
 
 h / 2025-04-11
